@@ -97,37 +97,36 @@ def load_img_info(files, dataset):
 
     anno_info = []
     for line in gt_list:
-        if len(line)>0:
-            # each line has one ploygen (4 vetices), and others.
-            # e.g., 695,885,866,888,867,1146,696,1143,Latin,9
-            line = line.strip()
-            strs = line.split(',')
-            category_id = 1
-            xy = [int(x) for x in strs[0:8]]
-            coordinates = np.array(xy).reshape(-1, 2)
-            polygon = Polygon(coordinates)
-            iscrowd = 0
-            # set iscrowd to 1 to ignore 1.
-            if (dataset == 'icdar2015'
-                    and strs[8] == '###') or (dataset == 'icdar2017'
-                                            and strs[9] == '###'):
-                iscrowd = 1
+        
+        # each line has one ploygen (4 vetices), and others.
+        # e.g., 695,885,866,888,867,1146,696,1143,Latin,9
+        line = line.strip()
+        strs = line.split(',')
+        category_id = 1
+        xy = [int(x) for x in strs[0:8]]
+        coordinates = np.array(xy).reshape(-1, 2)
+        polygon = Polygon(coordinates)
+        iscrowd = 0
+        # set iscrowd to 1 to ignore 1.
+        if (dataset == 'icdar2015'
+            and strs[8] == '###') or (dataset == 'icdar2017'
+            and strs[9] == '###'):
+            iscrowd = 1
 
-            area = polygon.area
-            # convert to COCO style XYWH format
-            min_x, min_y, max_x, max_y = polygon.bounds
-            bbox = [min_x, min_y, max_x - min_x, max_y - min_y]
+        area = polygon.area
+        # convert to COCO style XYWH format
+        min_x, min_y, max_x, max_y = polygon.bounds
+        bbox = [min_x, min_y, max_x - min_x, max_y - min_y]
 
-            anno = dict(
-                iscrowd=iscrowd,
-                category_id=category_id,
-                bbox=bbox,
-                area=area,
-                segmentation=[xy])
-            anno_info.append(anno)
-        else:
-            print(f"\n[EXCEPTION]: gt_file:{gt_file} cur_line:{line}")
-            
+        anno = dict(
+            iscrowd=iscrowd,
+            category_id=category_id,
+            bbox=bbox,
+            area=area,
+            segmentation=[xy])
+        anno_info.append(anno)
+        
+
     split_name = osp.basename(osp.dirname(img_file))
     img_info = dict(
         # remove img_prefix for filename
