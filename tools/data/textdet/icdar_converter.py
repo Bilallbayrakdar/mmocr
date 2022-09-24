@@ -97,7 +97,7 @@ def load_img_info(files, dataset):
 
     anno_info = []
     for line in gt_list:
-        try:
+        if len(line)>0:
             # each line has one ploygen (4 vetices), and others.
             # e.g., 695,885,866,888,867,1146,696,1143,Latin,9
             line = line.strip()
@@ -125,8 +125,9 @@ def load_img_info(files, dataset):
                 area=area,
                 segmentation=[xy])
             anno_info.append(anno)
-        except:
+        else:
             print(f"\n[EXCEPTION]: gt_file:{gt_file} cur_line:{line}")
+            
     split_name = osp.basename(osp.dirname(img_file))
     img_info = dict(
         # remove img_prefix for filename
